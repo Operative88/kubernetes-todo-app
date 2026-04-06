@@ -28,3 +28,12 @@ def get_db_connection():
     raise Exception("Nie można połączyć się z bazą danych")
 
 @app.route('/api/todos', methods=['GET'])
+def get_todos():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT task FROM todos ORDER BY id ASC;')
+    #Formatujemy wynik z bazy jako prostą listę stringów
+    todos = [row[0] for row in cur.fetchall()]
+    cur.close()
+    conn.close()
+    return jsonify(todos)
