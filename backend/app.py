@@ -44,9 +44,12 @@ def add_todo():
     if task:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('INSERT INTO todos (task) VALUES (%s);', (task,))
+        cur.execute("INSERT INTO todos (task) VALUES (%s);", (task,))
         conn.commit()
         cur.close()
         conn.close()
-        return jsonify({"message": "Zadanie dodane"}), 201
-    return jsonify({"error": "Brak treści zadania"}), 400
+        return jsonify({"message": "zadanie zostało dodane"}), 201
+    return jsonify({"error": "brak treści zadania"}), 400
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
