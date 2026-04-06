@@ -31,9 +31,22 @@ def get_db_connection():
 def get_todos():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT task FROM todos ORDER BY id ASC;')
-    #Formatujemy wynik z bazy jako prostą listę stringów
+    cur.execute('SELECT id FROM todos ORDER BY id ASC')
     todos = [row[0] for row in cur.fetchall()]
     cur.close()
     conn.close()
     return jsonify(todos)
+
+@app.route('/api/todos', methods=['POST'])
+def add_todo():
+    data = request.get_json()
+    task = data.get('task')
+    if task:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('INSERT INTO todos (task) VALUES (%s);', (task,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"message": "Zadanie dodane"}), 201
+    return jsonify({"error": "Brak treści zadania"}), 400
