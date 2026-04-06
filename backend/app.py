@@ -26,3 +26,5 @@ def get_db_connection():
             retries -= 1
             time.sleep(2)
     raise Exception("Nie można połączyć się z bazą danych")
+
+@app.route('/api/todos', methods=['GET'])
