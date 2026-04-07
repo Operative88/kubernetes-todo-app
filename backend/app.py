@@ -7,19 +7,17 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-#Dane logowania ze zmiennych środowiskowych
 DB_HOST = os.environ.get("DB_HOST", "db")
 DB_USER = os.environ.get("DB_USER", "postgres")
-DB_PASS = os.environ.get("DB_PASSWORD", "postgres")
+DB_PASS = os.environ.get("DB_PASSWORD", "mysecretpassword")
 DB_NAME = os.environ.get("DB_NAME", "tododb")
 
 def get_db_connection():
-    #Mechanizm ponawiania połączenia
     retries = 5
     while retries > 0:
         try:
             conn = psycopg2.connect(
-                host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASS    
+                host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASS
             )
             return conn
         except psycopg2.OperationalError:
@@ -31,8 +29,10 @@ def get_db_connection():
 def get_todos():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT id FROM todos ORDER BY id ASC')
-    todos = [row[0] for row in cur.fetchall()]
+    cur.execute('SELECT task FROM todos ORDER BY id ASC;')
+    rows = cur.fetchall()
+    # Wyciągamy pierwszy element z krotki (treść zadania)
+    todos = [row[0] for row in rows]
     cur.close()
     conn.close()
     return jsonify(todos)
@@ -40,16 +40,19 @@ def get_todos():
 @app.route('/api/todos', methods=['POST'])
 def add_todo():
     data = request.get_json()
-    task = data.get('task')
-    if task:
+    # Pobieramy wartość przypisaną do klucza 'task' wysłanego z JS
+    new_task = data.get('task')
+    
+    if new_task:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("INSERT INTO todos (task) VALUES (%s);", (task,))
+        # WAŻNE: Wstawiamy zmienną new_task do kolumny 'task'
+        cur.execute('INSERT INTO todos (task) VALUES (%s);', (new_task,))
         conn.commit()
         cur.close()
         conn.close()
-        return jsonify({"message": "zadanie zostało dodane"}), 201
-    return jsonify({"error": "brak treści zadania"}), 400
+        return jsonify({"message": "Zadanie dodane"}), 201
+    return jsonify({"error": "Brak treści"}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
