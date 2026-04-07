@@ -13,7 +13,7 @@
 
     <script>
         async function fetchTasks() {
-            const response = await fetch('http://localhost:5000/api/todos');
+            const response = await fetch('http://localhost:5000/api/todos', { cache: 'no-store' });
             const tasks = await response.json();
             const list = document.getElementById('todo-list');
             list.innerHTML = '';
