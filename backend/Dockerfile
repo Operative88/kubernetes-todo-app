@@ -3,11 +3,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-#optymalizacja cache'u Dockera
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Kopia kod aplikacji
 COPY app.py .
 
 EXPOSE 5000
