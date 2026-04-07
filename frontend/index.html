@@ -23,6 +23,23 @@
                 list.appendChild(li);
             });
         }
+
+        async function addTask() {
+            const input = document.getElementById('task-input');
+            const task = input.value;
+            if (!task) return;
+
+            await fetch('http://localhost:5000/api/todos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task })
+            });
+            
+            input.value = '';
+            fetchTasks();
+        }
+
+        fetchTasks();
     </script>
 </body>
 </html>
