@@ -12,34 +12,50 @@
     <button onclick="addTask()">Dodaj</button>
 
     <script>
-        async function fetchTasks() {
-            const response = await fetch('http://localhost:5000/api/todos', { cache: 'no-store' });
+    async function fetchTasks() {
+        try {
+            // Dodajemy parametr ?t=, aby oszukać cache przeglądarki
+            const response = await fetch('http://localhost:5000/api/todos?t=' + Date.now());
             const tasks = await response.json();
+            
             const list = document.getElementById('todo-list');
-            list.innerHTML = '';
+            
+            // KLUCZOWY MOMENT: Czyścimy listę przed renderowaniem nowej
+            list.innerHTML = ''; 
+
             tasks.forEach(task => {
                 const li = document.createElement('li');
                 li.innerText = task;
                 list.appendChild(li);
             });
+        } catch (err) {
+            console.error("Błąd pobierania:", err);
         }
+    }
 
-        async function addTask() {
-            const input = document.getElementById('task-input');
-            const task = input.value;
-            if (!task) return;
+    async function addTask() {
+        const input = document.getElementById('task-input');
+        const task = input.value;
+        if (!task) return;
 
-            await fetch('http://localhost:5000/api/todos', {
+        try {
+            const response = await fetch('http://localhost:5000/api/todos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ task })
             });
-            
-            input.value = '';
-            fetchTasks();
-        }
 
-        fetchTasks();
-    </script>
+            if (response.ok) {
+                input.value = '';
+                // Czekamy chwilę, żeby baza zdążyła przetworzyć, i odświeżamy
+                setTimeout(fetchTasks, 100); 
+            }
+        } catch (err) {
+            console.error("Błąd dodawania:", err);
+        }
+    }
+
+    fetchTasks();
+</script>
 </body>
 </html>
