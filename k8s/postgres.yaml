@@ -16,12 +16,21 @@ spec:
       - name: postgres
         image: postgres:15-alpine
         env:
-        - name: POSTGRES_PASSWORD
-          value: mysecretpassword
         - name: POSTGRES_DB
-          value: tododb
-        ports:
-        - containerPort: 5432
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: db-name
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: db-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
 ---
 apiVersion: v1
 kind: Service
