@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        # Używamy nazwy obrazu, którą załadowaliśmy do minikube
+        image: k8s-todo-app-backend
+        # WAŻNE: K8s nie może szukać obrazu w internecie, ma go wziąć z lokalnego node'a
+        imagePullPolicy: Never
+        env:
+        - name: DB_HOST
+          value: "db"  # To nazwa serwisu, który stworzyliśmy w postgres.yaml
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "mysecretpassword"
+        - name: DB_NAME
+          value: "tododb"
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP # Serwis wewnętrzny
