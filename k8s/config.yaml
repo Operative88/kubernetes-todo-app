@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  # Echo -n "mysecretpassword" | base64
+  password: bXlzZWNyZXRwYXNzd29yZA==
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+data:
+  db-name: "tododb"
+  db-user: "postgres"
+  db-host: "db"
