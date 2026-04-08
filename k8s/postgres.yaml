@@ -15,22 +15,16 @@ spec:
       containers:
       - name: postgres
         image: postgres:15-alpine
-        env:
-        - name: POSTGRES_DB
-          valueFrom:
-            configMapKeyRef:
-              name: db-config
-              key: db-name
-        - name: POSTGRES_USER
-          valueFrom:
-            configMapKeyRef:
-              name: db-config
-              key: db-user
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: password
+        # ... env tutaj ...
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data # Domyślna ścieżka danych Postgresa
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
 ---
 apiVersion: v1
 kind: Service
