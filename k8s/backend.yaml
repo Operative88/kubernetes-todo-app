@@ -20,15 +20,25 @@ spec:
         imagePullPolicy: Never
         env:
         - name: DB_HOST
-          value: "db"  # To nazwa serwisu, który stworzyliśmy w postgres.yaml
-        - name: DB_USER
-          value: "postgres"
-        - name: DB_PASSWORD
-          value: "mysecretpassword"
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: db-host
         - name: DB_NAME
-          value: "tododb"
-        ports:
-        - containerPort: 5000
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: db-name
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
 ---
 apiVersion: v1
 kind: Service
