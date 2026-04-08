@@ -15,7 +15,7 @@
     async function fetchTasks() {
         try {
             // Dodajemy parametr ?t=, aby oszukać cache przeglądarki
-            const response = await fetch('http://localhost:5000/api/todos?t=' + Date.now());
+            const response = await fetch('/api/todos' + Date.now());
             const tasks = await response.json();
             
             const list = document.getElementById('todo-list');
@@ -39,7 +39,7 @@
         if (!task) return;
 
         try {
-            const response = await fetch('http://localhost:5000/api/todos', {
+            const response = await fetch('/api/todos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ task })
