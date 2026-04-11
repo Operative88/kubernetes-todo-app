@@ -233,10 +233,3 @@ docker push your-registry/todo-frontend:latest
 - View logs: `kubectl logs <pod-name>`
 - Verify resources: `kubectl get events`
 
-## License
-
-This project is open source and available under the MIT License.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
